@@ -15,7 +15,7 @@ stages:
         Contents: |
          **\Output\client\Rightangle*.dll
          **\Output\common\Rightangle*.dll
-         **\Output\server\Metroplex*.dll
+         **\Output\server\Rightangle*.dll
          **\Libraries\*.dll
         TargetFolder: '$(Build.ArtifactStagingDirectory)\$(Build.DefinitionName)\binaries'
         OverWrite: true
