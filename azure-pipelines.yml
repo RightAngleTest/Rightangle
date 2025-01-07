@@ -1,40 +1,21 @@
-trigger:
-  branches:
-    include:
-      - main   # Trigger on pushes to the main branch
-
 stages:
-- stage: Build
-  displayName: Build Stage
-  jobs:
-  - job: Build
-    steps:
-    - task: UseNode@2   # Example for a Node.js application
-      inputs:
-        version: '16.x'
-    - script: |
-        npm install
-        npm run build
-      displayName: 'Install Dependencies and Build'
+ - stage: BuildStage
+   displayName: Build
+   jobs:
+   - job: BuildJob
 
-- stage: Deploy
-  displayName: Deploy Stage
-  dependsOn: Build
-  jobs:
-  - deployment: DeployToStaging
-    displayName: Deploy to Staging
-    environment: 'Staging'   # Use the environment created earlier
-    strategy:
-      runOnce:
-        deploy:
-          steps:
-          - task: AzureCLI@2
-            inputs:
-              azureSubscription: 'Your-Service-Connection-Name'
-              scriptType: bash
-              scriptLocation: inlineScript
-              inlineScript: |
-                az webapp deployment source config-zip \
-                  --resource-group <ResourceGroupName> \
-                  --name <AppServiceName> \
-                  --src <PathToYourZipFile>
+     steps:
+     - task: MSBuild@1
+       displayName: 'Build solution **/*.sln'
+
+     - task: CopyFiles@2
+       displayName: Copy binaries Files
+       inputs:
+        SourceFolder: '$(Build.SourcesDirectory)'
+        Contents: |
+         **\Output\client\Metroplex*.dll
+         **\Output\common\Metroplex*.dll
+         **\Output\server\Metroplex*.dll
+         **\Libraries\*.dll
+        TargetFolder: '$(Build.ArtifactStagingDirectory)\$(Build.DefinitionName)\binaries'
+        OverWrite: true
