@@ -1,21 +1,21 @@
-trigger:
-    -None
-  branches:
-    include:
-      - main   # Trigger on pushes to the main branch
+   stages:
+ - stage: BuildStage
+   displayName: Build
+   jobs:
+   - job: BuildJob
 
-stages:
-- stage: BuildStage
-  displayName: Build
-  jobs:
-  - job: BuildJob
-  
-   steps:
-    - task: CopyFiles@2   # Example for a Node.js application
-      inputs:
-      
-      SourceFloder: 
-         Location: \\10.50.10.4\
-         TargetFolder:
-         Location: \\10.50.10.4\Code\ 
+     steps:
+     - task: MSBuild@1
+       displayName: 'Build solution **/*.sln'
+
+     - task: CopyFiles@2
+       displayName: Copy binaries Files
+       inputs:
+        SourceFolder: '$(Build.SourcesDirectory)'
+        Contents: |
+         **\Output\client\Metroplex*.dll
+         **\Output\common\Metroplex*.dll
+         **\Output\server\Metroplex*.dll
+         **\Libraries\*.dll
+        TargetFolder: '$(Build.ArtifactStagingDirectory)\$(Build.DefinitionName)\binaries'
         OverWrite: true
