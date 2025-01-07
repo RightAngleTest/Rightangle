@@ -1,4 +1,4 @@
-   stages:
+stages:
  - stage: BuildStage
    displayName: Build
    jobs:
